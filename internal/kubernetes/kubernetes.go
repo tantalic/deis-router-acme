@@ -1,7 +1,10 @@
 package kubernetes
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -13,8 +16,7 @@ type Client struct {
 	HTTPClient *http.Client
 }
 
-func (c *Client) request(method string, path string, params url.Values, v interface{}) error {
-
+func (c *Client) request(method string, path string, params url.Values, headers http.Header, body interface{}, v interface{}) error {
 	if c.Scheme == "" {
 		c.Scheme = "http"
 	}
@@ -34,9 +36,28 @@ func (c *Client) request(method string, path string, params url.Values, v interf
 		RawQuery: params.Encode(),
 	}
 
-	req, err := http.NewRequest(method, u.String(), nil)
+	var bodyReader io.ReadWriter = nil
+	if body != nil {
+		bodyReader = new(bytes.Buffer)
+		encoder := json.NewEncoder(bodyReader)
+		err := encoder.Encode(body)
+		if err != nil {
+			return err
+		}
+	}
+
+	req, err := http.NewRequest(method, u.String(), bodyReader)
 	if err != nil {
 		return err
+	}
+
+	if headers != nil {
+		for key, header := range headers {
+			for _, value := range header {
+				fmt.Printf("%s:%s\n", key, value)
+				req.Header.Add(key, value)
+			}
+		}
 	}
 
 	res, err := c.HTTPClient.Do(req)
@@ -110,10 +131,16 @@ func (c *Client) ServicesMatchingSelector(labelSelector string) ([]Service, erro
 	}
 
 	var results ServiceList
-	err := c.request(http.MethodGet, "/api/v1/services", params, &results)
+	err := c.request(http.MethodGet, "/api/v1/services", params, nil, nil, &results)
 	if err != nil {
 		return []Service{}, err
 	}
 
 	return results.Services, nil
+}
+
+func (c *Client) PatchService(s Service, p Service) error {
+	headers := make(http.Header, 1)
+	headers.Set("Content-Type", "application/strategic-merge-patch+json")
+	return c.request(http.MethodPatch, s.Metadata.Path, nil, headers, p, nil)
 }
