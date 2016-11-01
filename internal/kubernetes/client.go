@@ -3,7 +3,6 @@ package kubernetes
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -54,7 +53,6 @@ func (c *Client) request(method string, path string, params url.Values, headers 
 	if headers != nil {
 		for key, header := range headers {
 			for _, value := range header {
-				fmt.Printf("%s:%s\n", key, value)
 				req.Header.Add(key, value)
 			}
 		}
