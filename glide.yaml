@@ -1,0 +1,3 @@
+package: tantalic.com/deis-workflow-acme
+import:
+- package: github.com/pkg/errors
