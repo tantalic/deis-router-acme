@@ -10,10 +10,12 @@ import (
 )
 
 func main() {
+	opts := OptionFromEnv()
+
 	certNeededChan := make(chan kubernetes.Service)
 	errorChan := make(chan error)
 
-	go certNeededLoop(30*time.Second, certNeededChan, errorChan)
+	go certNeededLoop(30*time.Second, opts, certNeededChan, errorChan)
 
 	for {
 		select {
@@ -25,17 +27,17 @@ func main() {
 	}
 }
 
-func certNeededLoop(sleep time.Duration, certNeededChan chan kubernetes.Service, errorChan chan error) {
+func certNeededLoop(sleep time.Duration, opts options, certNeededChan chan kubernetes.Service, errorChan chan error) {
 	for {
 		c := kubernetes.Client{}
-		services, err := c.ServicesMatchingSelector("router.deis.io/routable=true")
+		services, err := c.ServicesMatchingSelector(opts.RoutableServiceSelector)
 		if err != nil {
 			errorChan <- errors.Wrap(err, "kubernetes service lookup failed")
 			continue
 		}
 
 		for _, service := range services {
-			if serviceNeedsCert(service) {
+			if serviceNeedsCert(service, opts) {
 				certNeededChan <- service
 			}
 		}
@@ -44,8 +46,8 @@ func certNeededLoop(sleep time.Duration, certNeededChan chan kubernetes.Service,
 	}
 }
 
-func serviceNeedsCert(service kubernetes.Service) bool {
-	certificates := service.Metadata.Annotations["router.deis.io/certificates"]
+func serviceNeedsCert(service kubernetes.Service, opts options) bool {
+	certificates := service.Metadata.Annotations[opts.CertificatesAnnotation]
 	if certificates == "" {
 		return true
 	}
