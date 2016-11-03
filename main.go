@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"tantalic.com/deis-workflow-acme/internal/kubernetes"
+	"tantalic.com/deis-router-acme/internal/kubernetes"
 )
 
 func main() {
