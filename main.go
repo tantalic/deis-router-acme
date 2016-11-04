@@ -30,6 +30,9 @@ func main() {
 	}
 }
 
+// certNeededLoop polls the Kubernetes API to identify services that
+// should have TLS certificates generated. When a service is located
+// it is sent to the certNeededChan.
 func certNeededLoop(sleep time.Duration, opts Options, certNeededChan chan kubernetes.Service, errorChan chan error) {
 	for {
 		c := kubernetes.Client{}
