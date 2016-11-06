@@ -11,17 +11,6 @@ type Service struct {
 	Spec     ServiceSpec `json:"Spec"`
 }
 
-type Metadata struct {
-	Name        string            `json:"name,omitempty"`
-	Namespace   string            `json:"namespace,omitempty"`
-	Path        string            `json:"selfLink,omitempty"`
-	UID         string            `json:"uid,omitempty"`
-	Version     string            `json:"resourceVersion,omitempty"`
-	Created     string            `json:"creationTimestam,omitemptyp`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-}
-
 type ServiceSpec struct {
 	Ports                    []ServicePort     `json:"ports,omitempty"`
 	Selector                 map[string]string `json:"selector,omitempty"`

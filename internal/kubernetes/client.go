@@ -69,6 +69,15 @@ func (c *Client) request(method string, path string, params url.Values, headers 
 		return err
 	}
 
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		var status Status
+		err = json.Unmarshal(data, &status)
+		if err != nil {
+			return err
+		}
+		return status
+	}
+
 	err = json.Unmarshal(data, &v)
 	if err != nil {
 		return err
