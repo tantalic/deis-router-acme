@@ -1,7 +1,7 @@
 package kubernetes
 
 // ObjectMeta is metadata that all persisted resources must have.
-type Metadata struct {
+type ObjectMeta struct {
 	Name        string            `json:"name,omitempty"`
 	Namespace   string            `json:"namespace,omitempty"`
 	Path        string            `json:"selfLink,omitempty"`

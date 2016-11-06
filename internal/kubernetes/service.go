@@ -7,7 +7,7 @@ import (
 )
 
 type Service struct {
-	Metadata Metadata    `json:"metadata"`
+	Metadata ObjectMeta  `json:"metadata"`
 	Spec     ServiceSpec `json:"Spec"`
 }
 
@@ -32,8 +32,8 @@ type ServicePort struct {
 }
 
 type ServiceList struct {
-	Metadata Metadata  `json:"metadata,omitempty"`
-	Services []Service `json:"items,omitempty"`
+	Metadata ObjectMeta `json:"metadata,omitempty"`
+	Services []Service  `json:"items,omitempty"`
 }
 
 func (c *Client) AllServices() ([]Service, error) {
