@@ -85,3 +85,16 @@ func (c *Client) request(method string, path string, params url.Values, headers 
 
 	return nil
 }
+
+func (c *Client) post(path string, item interface{}) error {
+	headers := make(http.Header, 1)
+	headers.Set("Content-Type", "application/json")
+	return c.request(http.MethodPost, path, nil, headers, item, nil)
+}
+
+func (c *Client) patch(path string, patch interface{}) error {
+	headers := make(http.Header, 1)
+	headers.Set("Content-Type", "application/strategic-merge-patch+json")
+
+	return c.request(http.MethodPatch, path, nil, headers, patch, nil)
+}

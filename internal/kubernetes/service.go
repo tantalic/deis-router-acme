@@ -55,8 +55,6 @@ func (c *Client) ServicesMatchingSelector(labelSelector string) ([]Service, erro
 	return results.Services, nil
 }
 
-func (c *Client) PatchService(s Service, p Service) error {
-	headers := make(http.Header, 1)
-	headers.Set("Content-Type", "application/strategic-merge-patch+json")
-	return c.request(http.MethodPatch, s.Metadata.Path, nil, headers, p, nil)
+func (c *Client) PatchService(secret Secret, patch Secret) error {
+	return c.patch(secret.Metadata.Path, patch)
 }
